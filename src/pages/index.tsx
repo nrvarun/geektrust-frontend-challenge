@@ -1,4 +1,7 @@
 import Head from "next/head";
+import Container from "../components/Container";
+import SearchInput from "../components/SearchInput";
+import SearchResults from "./Home/SearchResults/SearchResults";
 
 export default function Home() {
   return (
@@ -9,9 +12,17 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <h1>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
+        <Container>
+          <h2>Admin UI</h2>
+          <form>
+            <SearchInput
+              id="searchInput"
+              name="search-input"
+              placeholder="Search here..."
+            />
+          </form>
+          <SearchResults data={[]} />
+        </Container>
       </main>
     </div>
   );
