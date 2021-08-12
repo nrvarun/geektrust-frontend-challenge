@@ -9,11 +9,23 @@ export const CustomStyles = css`
     --desktop-bp: 1280px;
     --desktop-lg: 1440px;
     --desktop-hd: 1920px;
+    --primary-color: #01ade5;
   }
 
   html,
   body {
     font-size: 16px;
     font-family: var(----primary-font, "Roboto", sans-serif);
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  ul,
+  li {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
   }
 `;

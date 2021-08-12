@@ -16,10 +16,10 @@ const Wrapper = styled.div`
   margin: 0 auto;
 
   @media (min-width: ${DEVICE_BREAKPOINTS.tablet}) {
-    max-width: calc(var(--tablet-bp) - 100px);
+    max-width: calc(var(--tablet-bp) - 5%);
   }
 
   @media (min-width: ${DEVICE_BREAKPOINTS.desktop}) {
-    max-width: calc(var(--desktop-bp) - 100px);
+    max-width: calc(var(--desktop-bp) - 15%);
   }
 `;

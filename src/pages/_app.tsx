@@ -1,21 +1,18 @@
 import type { AppProps } from "next/app";
+import { QueryClient, QueryClientProvider } from "react-query";
 import { GlobalStyle } from "../styles/GlobalStyle";
+import { ReactQueryDevtools } from "react-query/devtools";
+
+const queryClient = new QueryClient();
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <>
-      <link rel="preconnect" href="https://fonts.googleapis.com" />
-      <link
-        rel="preconnect"
-        href="https://fonts.gstatic.com"
-        crossOrigin="true"
-      />
-      <link
-        href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Roboto:wght@400;500;700&display=swap"
-        rel="stylesheet"
-      />
-      <GlobalStyle />
-      <Component {...pageProps} />
+      <QueryClientProvider client={queryClient}>
+        <GlobalStyle />
+        <Component {...pageProps} />
+        <ReactQueryDevtools />
+      </QueryClientProvider>
     </>
   );
 }

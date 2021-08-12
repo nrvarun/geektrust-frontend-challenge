@@ -1,28 +1,41 @@
-import React, { ReactElement, useEffect } from "react";
+import React, { ReactElement } from "react";
+import styled from "styled-components";
+import UserItem from "../../../components/UserItem";
+import { UserDataType } from "../../../types";
 
-interface Props {
-  data: [];
-}
-
-const getUserData = async () => {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}`);
-  const data = await res.json();
-
-  console.log(data);
-
-  return data;
+type IProps = {
+  data: UserDataType[];
 };
 
-function SearchResults({ data }: Props): ReactElement {
-  useEffect(() => {
-    getUserData();
-  }, []);
-
+function SearchResults({ data }: IProps): ReactElement {
   return (
     <section>
-      <div></div>
+      <StyledList>
+        <li>
+          <UserItem
+            isHeader
+            id={"0"}
+            role={"Role"}
+            email={"email"}
+            name={"name"}
+          />
+        </li>
+        {data.map(({ id, role, email, name }, index) => (
+          <li key={id}>
+            <UserItem id={id} role={role} email={email} name={name} />
+          </li>
+        ))}
+      </StyledList>
     </section>
   );
 }
 
 export default SearchResults;
+
+const StyledList = styled.ul`
+  li {
+    width: 100%;
+    margin: 0 0 10px 0;
+    border-bottom: 1px solid #dedede;
+  }
+`;
