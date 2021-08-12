@@ -1,19 +1,7 @@
 import Head from "next/head";
-import { useEffect } from "react";
-import styled from "styled-components";
-import Container from "../components/Container";
-import SearchInput from "../components/SearchInput";
-import useUserData from "../hooks/useUserData";
-import SearchResults from "./Home/SearchResults";
+import SearchListing from "./Home/SearchListing/SearchListing";
 
 export default function Home() {
-  const { data, isError, isLoading, isSuccess } = useUserData();
-  console.log();
-
-  useEffect(() => {
-    console.log(data);
-  }, [data]);
-
   return (
     <div>
       <Head>
@@ -22,22 +10,8 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <Container>
-          <StyledHeading>Admin UI</StyledHeading>
-          <form>
-            <SearchInput
-              id="searchInput"
-              name="search-input"
-              placeholder="Search by Name, email or role..."
-            />
-          </form>
-          {data && isSuccess && <SearchResults data={data} />}
-        </Container>
+        <SearchListing />
       </main>
     </div>
   );
 }
-
-const StyledHeading = styled.h1`
-  color: var(--primary-color, black);
-`;

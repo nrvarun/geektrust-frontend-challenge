@@ -22,14 +22,18 @@ function UserItem({
       <p>{name}</p>
       <p>{role}</p>
       <p>{email}</p>
-      <StyledActions>
-        <StyledButton>
-          <Image width="20" height="20" src={editIcon} alt="edit button" />
-        </StyledButton>
-        <StyledButton>
-          <Image width="20" height="20" src={trashIcon} alt="delete button" />
-        </StyledButton>
-      </StyledActions>
+      {isHeader ? (
+        <p>actions</p>
+      ) : (
+        <StyledActions>
+          <StyledButton>
+            <Image width="20" height="20" src={editIcon} alt="edit button" />
+          </StyledButton>
+          <StyledButton>
+            <Image width="20" height="20" src={trashIcon} alt="delete button" />
+          </StyledButton>
+        </StyledActions>
+      )}
     </StyledUserItem>
   );
 }
@@ -40,7 +44,7 @@ const StyledUserItem = styled.div`
   padding: 1rem;
   width: 100%;
   display: grid;
-  grid-template-columns: 0.5fr 1fr 0.75fr 1fr auto;
+  grid-template-columns: 0.5fr 1fr 0.75fr 1fr 0.5fr;
   justify-content: center;
   align-items: center;
 
