@@ -18,8 +18,6 @@ function Page({
   isDisabled,
   handleClick,
 }: Props): ReactElement {
-  console.log(text, isActive);
-
   return (
     <StyledPage
       disabled={isDisabled}

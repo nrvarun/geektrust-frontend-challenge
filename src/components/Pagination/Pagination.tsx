@@ -1,12 +1,12 @@
+import { UserDataType } from "@typings/types";
 import React, { ReactElement, useEffect, useState } from "react";
 import styled from "styled-components";
-import { UserDataType } from "../../types";
 import Page from "./Page";
 
 interface Props {
   size: number;
   list: UserDataType[];
-  onPageChange: (arr: Array<UserDataType>) => void;
+  onPageChange: (page: number, arr: Array<UserDataType>) => void;
 }
 
 function Pagination({ list, size, onPageChange }: Props): ReactElement {
@@ -29,7 +29,7 @@ function Pagination({ list, size, onPageChange }: Props): ReactElement {
   }, [list, size]);
 
   useEffect(() => {
-    onPageChange(list.slice(page * size - size, page * size));
+    onPageChange(page, list.slice(page * size - size, page * size));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, list]);
 

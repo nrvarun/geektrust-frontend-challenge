@@ -13,12 +13,13 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
-    "baseUrl": "/src",
+    "baseUrl": "./src",
     "paths": {
       "@components/*": ["components/*"],
-      "@types/*": ["types/*"],
+      "@typings/*": ["typings/*"],
       "@hooks/*": ["hooks/*"],
       "@libs/*": ["libs/*"],
+      "@HOC/*": ["HOC/*"],
       "@assets/*": ["assets/*"],
     }
   },

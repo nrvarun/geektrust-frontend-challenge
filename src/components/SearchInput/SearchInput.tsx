@@ -4,7 +4,7 @@ import styled from "styled-components";
 interface Props {
   id: string | undefined;
   name: string;
-  onChange?: (e: ChangeEvent) => void;
+  onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
   placeholder: string;
 }
 

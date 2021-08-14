@@ -1,24 +1,36 @@
 import React, { ReactElement } from "react";
 import styled from "styled-components";
-import { UserDataType } from "../../types";
+import { UserActionsType, UserDataType } from "@typings/types";
 
 import Image from "next/image";
 
-import editIcon from "../../assets/icons/edit.png";
-import trashIcon from "../../assets/icons/trash.png";
+import editIcon from "@assets/icons/edit.png";
+import trashIcon from "@assets/icons/trash.png";
 
-import { DEVICE_BREAKPOINTS } from "../../libs";
+import { DEVICE_BREAKPOINTS } from "@libs/constants";
 
-function UserItem({
+type UserRowType = UserDataType & UserActionsType;
+
+function UserRow({
   id,
   name,
   role,
   email,
   isHeader,
-}: UserDataType): ReactElement {
+  onCheck,
+  onEdit,
+  onDelete,
+}: UserRowType): ReactElement {
   return (
-    <StyledUserItem data-item-id={id} id={id}>
-      <div>{!isHeader && <input type="checkbox" name={name} value={id} />}</div>
+    <StyledUserRow data-item-id={id} id={id}>
+      <div>
+        <input
+          type="checkbox"
+          name={name}
+          value={!isHeader ? id : "all"}
+          onChange={onCheck}
+        />
+      </div>
       <p>{name}</p>
       <p>{role}</p>
       <p>{email}</p>
@@ -26,21 +38,21 @@ function UserItem({
         <p>actions</p>
       ) : (
         <StyledActions>
-          <StyledButton>
+          <StyledButton onClick={() => onEdit(id)}>
             <Image width="20" height="20" src={editIcon} alt="edit button" />
           </StyledButton>
-          <StyledButton>
+          <StyledButton onClick={() => onDelete(id)}>
             <Image width="20" height="20" src={trashIcon} alt="delete button" />
           </StyledButton>
         </StyledActions>
       )}
-    </StyledUserItem>
+    </StyledUserRow>
   );
 }
 
-export default UserItem;
+export default UserRow;
 
-const StyledUserItem = styled.div`
+const StyledUserRow = styled.div`
   padding: 1rem;
   width: 100%;
   display: grid;

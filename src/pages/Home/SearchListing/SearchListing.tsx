@@ -1,11 +1,17 @@
-import React, { ReactElement, useEffect, useState } from "react";
-import SearchInput from "../../../components/SearchInput";
-import useUserData from "../../../hooks/useUserData";
+import React, {
+  ChangeEvent,
+  FormEvent,
+  ReactElement,
+  useEffect,
+  useState,
+} from "react";
+import SearchInput from "@components/SearchInput";
+import useUserData from "@hooks/useUserData";
 import SearchResults from "../SearchResults";
-import Container from "../../../components/Container";
-import Heading from "../../../components/Heading";
-import { UserDataType } from "../../../types";
-import Pagination from "../../../components/Pagination";
+import Container from "@components/Container";
+import Heading from "@components/Heading";
+import { UserDataType } from "@typings/types";
+import Pagination from "@components/Pagination";
 
 const PAGINATION_SIZE = 5;
 
@@ -15,6 +21,7 @@ function SearchListing({}: Props): ReactElement {
   const { data, isError, isLoading, isSuccess } = useUserData();
 
   const [results, setResults] = useState<UserDataType[] | null>();
+  const [activePage, setActivePage] = useState(0);
 
   useEffect(() => {
     if (data && data.length > PAGINATION_SIZE) {
@@ -25,9 +32,32 @@ function SearchListing({}: Props): ReactElement {
     }
   }, [data]);
 
-  const handlePageChange = (list: UserDataType[]) => {
-    console.log("Handle Page Change");
+  const handlePageChange = (page: number, list: UserDataType[]) => {
+    console.log("Handle Page Change", page);
+    setActivePage(page);
     setResults(list);
+  };
+
+  const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
+    const searchQuery = e.target.value;
+
+    if (searchQuery !== "" && results) {
+      setResults(
+        results.filter(
+          (item) =>
+            item.name.toLowerCase().includes(searchQuery) ||
+            item.email.toLowerCase().includes(searchQuery) ||
+            item.role.toLowerCase().includes(searchQuery)
+        )
+      );
+    } else {
+      setResults(
+        data.slice(
+          activePage * PAGINATION_SIZE - PAGINATION_SIZE,
+          activePage * PAGINATION_SIZE
+        )
+      );
+    }
   };
 
   return (
@@ -39,9 +69,16 @@ function SearchListing({}: Props): ReactElement {
             id="searchInput"
             name="search-input"
             placeholder="Search by Name, email or role..."
+            onChange={handleSearch}
           />
         </form>
-        {results && <SearchResults data={results} />}
+        {results && (
+          <SearchResults
+            data={results}
+            currentPage={activePage}
+            onModify={handlePageChange}
+          />
+        )}
         {data && data.length > PAGINATION_SIZE && (
           <Pagination
             list={data}

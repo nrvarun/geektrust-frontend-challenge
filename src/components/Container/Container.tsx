@@ -1,6 +1,6 @@
 import React, { ReactElement } from "react";
 import styled from "styled-components";
-import { DEVICE_BREAKPOINTS } from "../../libs";
+import { DEVICE_BREAKPOINTS } from "@libs/constants";
 
 interface Props {
   children: React.ReactNode;
