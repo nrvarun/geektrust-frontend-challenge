@@ -1,3 +1,3 @@
-import UserRow from "./UserRow";
+import UserItem from "./UserItem";
 
-export default UserRow;
+export default UserItem;

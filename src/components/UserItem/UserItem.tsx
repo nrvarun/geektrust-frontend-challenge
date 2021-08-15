@@ -17,6 +17,7 @@ function UserRow({
   role,
   email,
   isHeader,
+  isChecked,
   onCheck,
   onEdit,
   onDelete,
@@ -29,6 +30,7 @@ function UserRow({
           name={name}
           value={!isHeader ? id : "all"}
           onChange={onCheck}
+          checked={isChecked}
         />
       </div>
       <p>{name}</p>

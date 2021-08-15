@@ -21,7 +21,6 @@ function SearchListing({}: Props): ReactElement {
   const { data, isError, isLoading, isSuccess } = useUserData();
 
   const [results, setResults] = useState<UserDataType[] | null>();
-  const [activePage, setActivePage] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
@@ -33,22 +32,13 @@ function SearchListing({}: Props): ReactElement {
     }
   }, [data]);
 
-  const handlePageChange = (page: number, list: UserDataType[]) => {
-    console.log("Handle Page Change", page);
-    setActivePage(page);
+  const handlePageChange = (list: UserDataType[]) => {
     setResults(list);
   };
 
   const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
     const query = e.target.value;
-
     setSearchQuery(query);
-
-    // if (query !== "" && results) {
-    //   const filteredResults = globalFilter(query);
-
-    //   setResults(filteredResults);
-    // }
   };
 
   const globalFilter = (list: UserDataType[]) => {
@@ -80,7 +70,6 @@ function SearchListing({}: Props): ReactElement {
         {results && (
           <SearchResults
             data={globalFilter(results)}
-            currentPage={activePage}
             onModify={handlePageChange}
           />
         )}

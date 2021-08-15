@@ -6,7 +6,7 @@ import Page from "./Page";
 interface Props {
   size: number;
   list: UserDataType[];
-  onPageChange: (page: number, arr: Array<UserDataType>) => void;
+  onPageChange: (arr: Array<UserDataType>) => void;
 }
 
 function Pagination({ list, size, onPageChange }: Props): ReactElement {
@@ -29,7 +29,7 @@ function Pagination({ list, size, onPageChange }: Props): ReactElement {
   }, [list, size]);
 
   useEffect(() => {
-    onPageChange(page, list.slice(page * size - size, page * size));
+    onPageChange(list.slice(page * size - size, page * size));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, list]);
 

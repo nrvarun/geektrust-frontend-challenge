@@ -9,6 +9,7 @@ export type UserDataType = {
 };
 
 export type UserActionsType = {
+  isChecked?: boolean;
   onCheck: (e: ChangeEvent<HTMLInputElement>) => void;
   onEdit: (e: string) => void;
   onDelete: (e: string) => void;

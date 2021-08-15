@@ -10,17 +10,64 @@ import styled from "styled-components";
 import Modal from "@components/Modal";
 import UserItem from "@components/UserItem";
 import { UserDataType } from "@typings/types";
+import Button from "@components/Button";
 
 type IProps = {
   data: UserDataType[] | undefined;
-  currentPage: number;
-  onModify: (page: number, list: UserDataType[]) => void;
+  onModify: (list: UserDataType[]) => void;
 };
 
-function SearchResults({ data, currentPage, onModify }: IProps): ReactElement {
+type SelectedUsersState = number[];
+
+function SearchResults({ data, onModify }: IProps): ReactElement {
+  const [selectedUsers, setSelectedUsers] = useState<SelectedUsersState>([]);
+  const [isCheckAll, setIsCheckAll] = useState(false);
+
   const handleCheckBoxChange = (event: ChangeEvent<HTMLInputElement>) => {
-    console.log("user selected", event.target.value);
+    const checkBox = event.target;
+
+    if (checkBox.value !== "all") {
+      setSelectedUsers((state) => {
+        return [...state, +checkBox.value];
+      });
+    } else {
+      if (checkBox.checked) {
+        setIsCheckAll(true);
+
+        if (data) {
+          setSelectedUsers(data.map((item: any) => +item.id));
+        }
+      } else {
+        setIsCheckAll(false);
+      }
+    }
+
+    if (!checkBox.checked) {
+      setSelectedUsers(
+        selectedUsers.filter((item) => item !== +checkBox.value)
+      );
+    }
   };
+
+  useEffect(() => {
+    if (!isCheckAll) {
+      setSelectedUsers([]);
+    }
+  }, [isCheckAll]);
+
+  useEffect(() => {
+    if (data) {
+      if (selectedUsers.length === data.length) {
+        setIsCheckAll(true);
+      } else {
+        setIsCheckAll(false);
+      }
+    }
+
+    if (data?.length === 0) {
+      setIsCheckAll(false);
+    }
+  }, [selectedUsers, data]);
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editItem, setEditItem] = useState<UserDataType | null>(null);
@@ -54,7 +101,6 @@ function SearchResults({ data, currentPage, onModify }: IProps): ReactElement {
 
       if (data) {
         onModify(
-          currentPage,
           data.map((item) => (item.id === editItem.id ? editedData : item))
         );
         toggleModal();
@@ -75,10 +121,25 @@ function SearchResults({ data, currentPage, onModify }: IProps): ReactElement {
 
   const handleDeleteRow = (id: string) => {
     if (data) {
-      onModify(
-        currentPage,
-        data.filter((item) => item.id !== id)
-      );
+      onModify(data.filter((item) => item.id !== id));
+    }
+  };
+
+  const handleDeleteSelected = () => {
+    if (selectedUsers && data) {
+      let finalUsersCollection = [...data];
+
+      selectedUsers.map((id, index) => {
+        finalUsersCollection = [
+          ...finalUsersCollection?.filter((user) => +user.id !== id),
+        ];
+      });
+      /**
+       * Remove the selected items from the array and
+       * update the state with those values
+       */
+      onModify(finalUsersCollection);
+      setSelectedUsers([]);
     }
   };
 
@@ -92,6 +153,7 @@ function SearchResults({ data, currentPage, onModify }: IProps): ReactElement {
             role={"Role"}
             email={"email"}
             name={"name"}
+            isChecked={isCheckAll}
             onCheck={handleCheckBoxChange}
             onEdit={handleEditRow}
             onDelete={handleDeleteRow}
@@ -105,6 +167,7 @@ function SearchResults({ data, currentPage, onModify }: IProps): ReactElement {
                 role={role}
                 email={email}
                 name={name}
+                isChecked={selectedUsers.includes(+id)}
                 onEdit={handleEditRow}
                 onDelete={handleDeleteRow}
                 onCheck={handleCheckBoxChange}
@@ -112,6 +175,38 @@ function SearchResults({ data, currentPage, onModify }: IProps): ReactElement {
             </li>
           ))}
       </StyledList>
+      <Button
+        color="#b61919"
+        text="Delete Selected Items"
+        disabled={selectedUsers.length > 0 ? false : true}
+        onClick={handleDeleteSelected}
+        type="button"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          marginTop: 30,
+          fontSize: "0.85rem",
+        }}
+      >
+        <span>
+          <svg
+            className="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+            ></path>
+          </svg>
+        </span>
+        <span style={{ marginLeft: 5 }}>Delete Selected</span>
+      </Button>
       {isModalVisible && (
         <Modal
           title={`Edit ${editItem?.name}'s Data`}
@@ -164,7 +259,7 @@ function SearchResults({ data, currentPage, onModify }: IProps): ReactElement {
               </label>
             </StyledFormGroup>
             <StyledFormGroup>
-              <StyledSubmitButton>Update</StyledSubmitButton>
+              <Button text="Update" type="submit" />
             </StyledFormGroup>
           </form>
         </Modal>
@@ -202,16 +297,4 @@ const StyledFormGroup = styled.div`
       border: 2px solid var(--primary-color);
     }
   }
-`;
-
-const StyledSubmitButton = styled.button`
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
-  box-shadow: none;
-  border-radius: 2px;
-  font-size: 0.85rem;
-  padding: 0.5rem;
-  color: var(--primary-color, #01ade5);
-  border: 1px solid var(--primary-color, #01ade5);
 `;

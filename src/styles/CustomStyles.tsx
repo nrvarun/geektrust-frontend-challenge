@@ -10,6 +10,7 @@ export const CustomStyles = css`
     --desktop-lg: 1440px;
     --desktop-hd: 1920px;
     --primary-color: #01ade5;
+    --danger-color: #b61919;
   }
 
   html,
