@@ -12,7 +12,7 @@ import UserItem from "@components/UserItem";
 import { UserDataType } from "@typings/types";
 
 type IProps = {
-  data: UserDataType[];
+  data: UserDataType[] | undefined;
   currentPage: number;
   onModify: (page: number, list: UserDataType[]) => void;
 };
@@ -52,29 +52,34 @@ function SearchResults({ data, currentPage, onModify }: IProps): ReactElement {
         ...editFormFields,
       };
 
-      onModify(
-        currentPage,
-        data.map((item) => (item.id === editItem.id ? editedData : item))
-      );
-      toggleModal();
+      if (data) {
+        onModify(
+          currentPage,
+          data.map((item) => (item.id === editItem.id ? editedData : item))
+        );
+        toggleModal();
+      }
     }
   };
 
   const handleEditRow = (id: string) => {
-    const activeItem = data.filter((item) => item.id === id)[0];
+    if (data) {
+      const activeItem = data.filter((item) => item.id === id)[0];
 
-    setEditItem(activeItem);
-    setEditFormFields(activeItem);
+      setEditItem(activeItem);
+      setEditFormFields(activeItem);
 
-    toggleModal();
+      toggleModal();
+    }
   };
 
   const handleDeleteRow = (id: string) => {
-    console.log("delete the item", id);
-    onModify(
-      currentPage,
-      data.filter((item) => item.id !== id)
-    );
+    if (data) {
+      onModify(
+        currentPage,
+        data.filter((item) => item.id !== id)
+      );
+    }
   };
 
   return (
@@ -92,19 +97,20 @@ function SearchResults({ data, currentPage, onModify }: IProps): ReactElement {
             onDelete={handleDeleteRow}
           />
         </li>
-        {data.map(({ id, role, email, name }, index) => (
-          <li key={id}>
-            <UserItem
-              id={id}
-              role={role}
-              email={email}
-              name={name}
-              onEdit={handleEditRow}
-              onDelete={handleDeleteRow}
-              onCheck={handleCheckBoxChange}
-            />
-          </li>
-        ))}
+        {data &&
+          data.map(({ id, role, email, name }, index) => (
+            <li key={id}>
+              <UserItem
+                id={id}
+                role={role}
+                email={email}
+                name={name}
+                onEdit={handleEditRow}
+                onDelete={handleDeleteRow}
+                onCheck={handleCheckBoxChange}
+              />
+            </li>
+          ))}
       </StyledList>
       {isModalVisible && (
         <Modal

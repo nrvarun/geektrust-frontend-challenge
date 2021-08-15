@@ -22,6 +22,7 @@ function SearchListing({}: Props): ReactElement {
 
   const [results, setResults] = useState<UserDataType[] | null>();
   const [activePage, setActivePage] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     if (data && data.length > PAGINATION_SIZE) {
@@ -39,24 +40,28 @@ function SearchListing({}: Props): ReactElement {
   };
 
   const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
-    const searchQuery = e.target.value;
+    const query = e.target.value;
 
-    if (searchQuery !== "" && results) {
-      setResults(
-        results.filter(
-          (item) =>
+    setSearchQuery(query);
+
+    // if (query !== "" && results) {
+    //   const filteredResults = globalFilter(query);
+
+    //   setResults(filteredResults);
+    // }
+  };
+
+  const globalFilter = (list: UserDataType[]) => {
+    if (searchQuery === "") {
+      return list;
+    } else {
+      if (list && searchQuery)
+        return list.filter(
+          (item: UserDataType) =>
             item.name.toLowerCase().includes(searchQuery) ||
             item.email.toLowerCase().includes(searchQuery) ||
             item.role.toLowerCase().includes(searchQuery)
-        )
-      );
-    } else {
-      setResults(
-        data.slice(
-          activePage * PAGINATION_SIZE - PAGINATION_SIZE,
-          activePage * PAGINATION_SIZE
-        )
-      );
+        );
     }
   };
 
@@ -74,7 +79,7 @@ function SearchListing({}: Props): ReactElement {
         </form>
         {results && (
           <SearchResults
-            data={results}
+            data={globalFilter(results)}
             currentPage={activePage}
             onModify={handlePageChange}
           />
