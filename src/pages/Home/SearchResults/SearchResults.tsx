@@ -1,27 +1,31 @@
 import React, {
   ChangeEvent,
-  FormEvent,
+  memo,
   ReactElement,
+  useCallback,
   useEffect,
   useState,
 } from "react";
+import { useQuery } from "react-query";
+import { queryClient } from "pages/_app";
 import styled from "styled-components";
 
 import Modal from "@components/Modal";
 import UserItem from "@components/UserItem";
-import { UserDataType } from "@typings/types";
 import Button from "@components/Button";
+import { UserDataType } from "@typings/types";
 
 type IProps = {
-  data: UserDataType[] | undefined;
-  onModify: (list: UserDataType[]) => void;
+  results: UserDataType[] | undefined;
 };
 
 type SelectedUsersState = number[];
 
-function SearchResults({ data, onModify }: IProps): ReactElement {
+function SearchResults({ results }: IProps): ReactElement {
   const [selectedUsers, setSelectedUsers] = useState<SelectedUsersState>([]);
   const [isCheckAll, setIsCheckAll] = useState(false);
+
+  const { data: users } = useQuery<UserDataType[]>("users");
 
   const handleCheckBoxChange = (event: ChangeEvent<HTMLInputElement>) => {
     const checkBox = event.target;
@@ -34,8 +38,8 @@ function SearchResults({ data, onModify }: IProps): ReactElement {
       if (checkBox.checked) {
         setIsCheckAll(true);
 
-        if (data) {
-          setSelectedUsers(data.map((item: any) => +item.id));
+        if (results) {
+          setSelectedUsers(results.map((item: any) => +item.id));
         }
       } else {
         setIsCheckAll(false);
@@ -56,18 +60,18 @@ function SearchResults({ data, onModify }: IProps): ReactElement {
   }, [isCheckAll]);
 
   useEffect(() => {
-    if (data) {
-      if (selectedUsers.length === data.length) {
+    if (results) {
+      if (selectedUsers.length === results.length) {
         setIsCheckAll(true);
       } else {
         setIsCheckAll(false);
       }
     }
 
-    if (data?.length === 0) {
+    if (results?.length === 0) {
       setIsCheckAll(false);
     }
-  }, [selectedUsers, data]);
+  }, [selectedUsers, results]);
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editItem, setEditItem] = useState<UserDataType | null>(null);
@@ -77,57 +81,73 @@ function SearchResults({ data, onModify }: IProps): ReactElement {
     email: "",
   });
 
-  const toggleModal = () => {
+  const toggleModal = useCallback(() => {
     setIsModalVisible((state) => !state);
-  };
+  }, []);
 
-  const handleInputChange = (
-    e: ChangeEvent<HTMLInputElement & HTMLSelectElement>
-  ) => {
-    setEditFormFields({
-      ...editFormFields,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleFormSubmit = (e: any) => {
-    e.preventDefault();
-
-    if (editItem) {
-      const editedData = {
-        id: editItem.id,
+  const handleInputChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement & HTMLSelectElement>) => {
+      setEditFormFields({
         ...editFormFields,
-      };
+        [e.target.name]: e.target.value,
+      });
+    },
+    [editFormFields]
+  );
 
-      if (data) {
-        onModify(
-          data.map((item) => (item.id === editItem.id ? editedData : item))
-        );
+  const handleFormSubmit = useCallback(
+    (e: any) => {
+      e.preventDefault();
+
+      if (editItem) {
+        const editedData = {
+          id: editItem.id,
+          ...editFormFields,
+        };
+
+        if (results && users) {
+          queryClient.setQueryData(
+            "users",
+            users.map((user: UserDataType) =>
+              user.id === editItem.id ? editedData : user
+            )
+          );
+          toggleModal();
+        }
+      }
+    },
+    [editFormFields, editItem, results, toggleModal, users]
+  );
+
+  const handleEditRow = useCallback(
+    (id: string) => {
+      if (results) {
+        const activeItem = results.filter((item) => item.id === id)[0];
+
+        setEditItem(activeItem);
+        setEditFormFields(activeItem);
+
         toggleModal();
       }
-    }
-  };
+    },
+    [results, toggleModal]
+  );
 
-  const handleEditRow = (id: string) => {
-    if (data) {
-      const activeItem = data.filter((item) => item.id === id)[0];
+  const handleDeleteRow = useCallback(
+    (id: string) => {
+      if (results && users) {
+        queryClient.setQueryData(
+          "users",
+          users.filter((item: UserDataType) => item.id !== id)
+        );
+      }
+    },
+    [results, users]
+  );
 
-      setEditItem(activeItem);
-      setEditFormFields(activeItem);
-
-      toggleModal();
-    }
-  };
-
-  const handleDeleteRow = (id: string) => {
-    if (data) {
-      onModify(data.filter((item) => item.id !== id));
-    }
-  };
-
-  const handleDeleteSelected = () => {
-    if (selectedUsers && data) {
-      let finalUsersCollection = [...data];
+  const handleDeleteSelected = useCallback(() => {
+    if (selectedUsers && users) {
+      let finalUsersCollection = [...users];
 
       selectedUsers.map((id, index) => {
         finalUsersCollection = [
@@ -138,10 +158,10 @@ function SearchResults({ data, onModify }: IProps): ReactElement {
        * Remove the selected items from the array and
        * update the state with those values
        */
-      onModify(finalUsersCollection);
+      queryClient.setQueryData("users", finalUsersCollection);
       setSelectedUsers([]);
     }
-  };
+  }, [selectedUsers, users]);
 
   return (
     <section>
@@ -159,8 +179,8 @@ function SearchResults({ data, onModify }: IProps): ReactElement {
             onDelete={handleDeleteRow}
           />
         </li>
-        {data &&
-          data.map(({ id, role, email, name }, index) => (
+        {results &&
+          results.map(({ id, role, email, name }, index) => (
             <li key={id}>
               <UserItem
                 id={id}
@@ -191,7 +211,6 @@ function SearchResults({ data, onModify }: IProps): ReactElement {
       >
         <span>
           <svg
-            className="w-6 h-6"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -274,7 +293,7 @@ const StyledList = styled.ul`
   li {
     width: 100%;
     margin: 0 0 10px 0;
-    border-bottom: 1px solid #dedede;
+    border-bottom: 1px solid #a2dbfa;
   }
 `;
 

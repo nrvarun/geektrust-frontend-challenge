@@ -1,28 +1,33 @@
-import React, {
-  ChangeEvent,
-  FormEvent,
-  ReactElement,
-  useEffect,
-  useState,
-} from "react";
+import React, { ChangeEvent, ReactElement, useEffect, useState } from "react";
 import SearchInput from "@components/SearchInput";
-import useUserData from "@hooks/useUserData";
+import useUserData from "@hooks/useMembers";
 import SearchResults from "../SearchResults";
 import Container from "@components/Container";
-import Heading from "@components/Heading";
+import Text from "@components/Text";
 import { UserDataType } from "@typings/types";
 import Pagination from "@components/Pagination";
+import { EmptyState, ErrorState } from "@components/EmptyState";
 
 const PAGINATION_SIZE = 5;
 
-type Props = {};
+type SearchListingProps = {};
 
-function SearchListing({}: Props): ReactElement {
-  const { data, isError, isLoading, isSuccess } = useUserData();
+function SearchListing({}: SearchListingProps): ReactElement {
+  /**
+   * Get the data from the React Query with the custom hook
+   */
+  const { data, isError } = useUserData();
 
+  /**
+   * Store the results and the search field value in the state
+   */
   const [results, setResults] = useState<UserDataType[] | null>();
   const [searchQuery, setSearchQuery] = useState("");
 
+  /**
+   * Every time the data changes, check if there is data and
+   * check the length and then update the results state with that.
+   */
   useEffect(() => {
     if (data && data.length > PAGINATION_SIZE) {
       /**
@@ -58,7 +63,7 @@ function SearchListing({}: Props): ReactElement {
   return (
     <section>
       <Container>
-        <Heading title="Admin UI" />
+        <Text type="h1" title="Admin UI" />
         <form>
           <SearchInput
             id="searchInput"
@@ -67,13 +72,27 @@ function SearchListing({}: Props): ReactElement {
             onChange={handleSearch}
           />
         </form>
-        {results && (
-          <SearchResults
-            data={globalFilter(results)}
-            onModify={handlePageChange}
-          />
+        {/**
+         * Check if there has been an error in processing the request and
+         * if so show the error.
+         */}
+        {isError && <ErrorState />}
+        {/**
+         * Check if there is data, and that no error has happened.
+         * If so then show the users list
+         */}
+        {results && !isError && results.length !== 0 && (
+          <SearchResults results={globalFilter(results)} />
         )}
-        {data && data.length > PAGINATION_SIZE && (
+        {/**
+         * Check if the list is empty and if so show an empty list
+         */}
+        {results && results.length === 0 && <EmptyState />}
+        {/**
+         * Render the pagination based on the users list and
+         * pass a function to handle the page change events
+         */}
+        {data && data.length > 0 && data.length > PAGINATION_SIZE && (
           <Pagination
             list={data}
             onPageChange={handlePageChange}

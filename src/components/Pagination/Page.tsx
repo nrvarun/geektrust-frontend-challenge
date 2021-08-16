@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 type PageType = "next" | "previous" | "normal";
 
-interface Props {
+interface PageProps {
   text: string | number;
   isActive?: boolean;
   type?: PageType;
@@ -17,7 +17,9 @@ function Page({
   isActive = false,
   isDisabled,
   handleClick,
-}: Props): ReactElement {
+}: PageProps): ReactElement {
+  console.log("Page is rendered");
+
   return (
     <StyledPage
       disabled={isDisabled}

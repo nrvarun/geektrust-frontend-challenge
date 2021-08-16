@@ -36,11 +36,11 @@ const StyledSearchWrapper = styled.label`
     width: 100%;
     padding: 10px;
     font-family: var(--secondary-font);
-    border: 1px solid #dedede;
+    border: 1px solid #a2dbfa;
 
     &:focus,
     &:active {
-      border: 1px solid #dedede;
+      border: 1px solid #a2dbfa;
       outline: none;
     }
   }

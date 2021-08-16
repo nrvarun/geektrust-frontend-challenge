@@ -10,8 +10,6 @@ interface Props {
 }
 
 function Pagination({ list, size, onPageChange }: Props): ReactElement {
-  console.log("rendering pagination");
-
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState<number[] | null>(null);
 

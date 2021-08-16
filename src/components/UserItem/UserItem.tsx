@@ -1,4 +1,4 @@
-import React, { ReactElement } from "react";
+import React, { memo, ReactElement } from "react";
 import styled from "styled-components";
 import { UserActionsType, UserDataType } from "@typings/types";
 
@@ -11,7 +11,7 @@ import { DEVICE_BREAKPOINTS } from "@libs/constants";
 
 type UserRowType = UserDataType & UserActionsType;
 
-function UserRow({
+function UserItem({
   id,
   name,
   role,
@@ -23,7 +23,13 @@ function UserRow({
   onDelete,
 }: UserRowType): ReactElement {
   return (
-    <StyledUserRow data-item-id={id} id={id}>
+    <StyledUserRow
+      data-item-id={id}
+      id={id}
+      style={{
+        backgroundColor: !isHeader && isChecked ? "#EDEEF7" : "transparent",
+      }}
+    >
       <div>
         <input
           type="checkbox"
@@ -52,7 +58,7 @@ function UserRow({
   );
 }
 
-export default UserRow;
+export default UserItem;
 
 const StyledUserRow = styled.div`
   padding: 1rem;
