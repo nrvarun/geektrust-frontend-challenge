@@ -35,7 +35,7 @@ function SearchListing({}: SearchListingProps): ReactElement {
        */
       setResults(data.slice(0, PAGINATION_SIZE));
     }
-  }, []);
+  }, [data]);
 
   useEffect(() => {
     console.log("Data changed", data);
