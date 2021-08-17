@@ -8,7 +8,7 @@ import { UserDataType } from "@typings/types";
 import Pagination from "@components/Pagination";
 import { EmptyState, ErrorState } from "@components/EmptyState";
 
-const PAGINATION_SIZE = 10;
+const PAGINATION_SIZE = 5;
 
 type SearchListingProps = {};
 
@@ -35,10 +35,10 @@ function SearchListing({}: SearchListingProps): ReactElement {
        */
       setResults(data.slice(0, PAGINATION_SIZE));
     }
-  }, [data]);
+  }, []);
 
   useEffect(() => {
-    console.log(data);
+    console.log("Data changed", data);
   }, [data]);
 
   const handlePageChange = (list: UserDataType[]) => {

@@ -3,13 +3,17 @@ import React, { ReactElement, useEffect, useState } from "react";
 import styled from "styled-components";
 import Page from "./Page";
 
-interface Props {
+interface PaginationProps {
   size: number;
   list: UserDataType[];
   onPageChange: (arr: Array<UserDataType>) => void;
 }
 
-function Pagination({ list, size, onPageChange }: Props): ReactElement {
+function Pagination({
+  list,
+  size,
+  onPageChange,
+}: PaginationProps): ReactElement {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState<number[] | null>(null);
 
@@ -27,6 +31,7 @@ function Pagination({ list, size, onPageChange }: Props): ReactElement {
   }, [list, size]);
 
   useEffect(() => {
+    console.log("page or list changed", list.length);
     onPageChange(list.slice(page * size - size, page * size));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, list]);
