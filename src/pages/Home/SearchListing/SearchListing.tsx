@@ -8,7 +8,7 @@ import { UserDataType } from "@typings/types";
 import Pagination from "@components/Pagination";
 import { EmptyState, ErrorState } from "@components/EmptyState";
 
-const PAGINATION_SIZE = 5;
+const PAGINATION_SIZE = 10;
 
 type SearchListingProps = {};
 
@@ -29,12 +29,16 @@ function SearchListing({}: SearchListingProps): ReactElement {
    * check the length and then update the results state with that.
    */
   useEffect(() => {
-    if (data && data.length > PAGINATION_SIZE) {
+    if (data) {
       /**
        * Initialize the state with the first page contents
        */
       setResults(data.slice(0, PAGINATION_SIZE));
     }
+  }, [data]);
+
+  useEffect(() => {
+    console.log(data);
   }, [data]);
 
   const handlePageChange = (list: UserDataType[]) => {

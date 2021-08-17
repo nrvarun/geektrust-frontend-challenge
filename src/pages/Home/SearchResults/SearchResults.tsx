@@ -165,6 +165,37 @@ function SearchResults({ results }: IProps): ReactElement {
 
   return (
     <section>
+      <Button
+        color="#b61919"
+        text="Delete Selected Items"
+        disabled={selectedUsers.length > 0 ? false : true}
+        onClick={handleDeleteSelected}
+        type="button"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          marginTop: 30,
+          fontSize: "0.85rem",
+        }}
+      >
+        <span>
+          <svg
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+            ></path>
+          </svg>
+        </span>
+        <span style={{ marginLeft: 5 }}>{`(${selectedUsers.length})`}</span>
+      </Button>
       <StyledList>
         <li>
           <UserItem
@@ -195,37 +226,7 @@ function SearchResults({ results }: IProps): ReactElement {
             </li>
           ))}
       </StyledList>
-      <Button
-        color="#b61919"
-        text="Delete Selected Items"
-        disabled={selectedUsers.length > 0 ? false : true}
-        onClick={handleDeleteSelected}
-        type="button"
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          marginTop: 30,
-          fontSize: "0.85rem",
-        }}
-      >
-        <span>
-          <svg
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-            ></path>
-          </svg>
-        </span>
-        <span style={{ marginLeft: 5 }}>Delete Selected</span>
-      </Button>
+
       {isModalVisible && (
         <Modal
           title={`Edit ${editItem?.name}'s Data`}
@@ -290,10 +291,16 @@ function SearchResults({ results }: IProps): ReactElement {
 export default SearchResults;
 
 const StyledList = styled.ul`
+  padding: 0 0 1rem 0;
+
   li {
     width: 100%;
     margin: 0 0 10px 0;
     border-bottom: 1px solid #a2dbfa;
+
+    &:last-child {
+      border-color: transparent;
+    }
   }
 `;
 
