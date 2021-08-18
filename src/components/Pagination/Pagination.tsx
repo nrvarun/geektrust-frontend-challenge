@@ -6,6 +6,8 @@ import Page from "./Page";
 interface PaginationProps {
   size: number;
   list: UserDataType[];
+  activePage: number;
+  handleActivePage: (page: number) => void;
   onPageChange: (arr: Array<UserDataType>) => void;
 }
 
@@ -13,8 +15,10 @@ function Pagination({
   list,
   size,
   onPageChange,
+  activePage,
+  handleActivePage,
 }: PaginationProps): ReactElement {
-  const [page, setPage] = useState(1);
+  // const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState<number[] | null>(null);
 
   useEffect(() => {
@@ -32,33 +36,34 @@ function Pagination({
 
   useEffect(() => {
     console.log("page or list changed", list.length);
-    onPageChange(list.slice(page * size - size, page * size));
+    onPageChange(list.slice(activePage * size - size, activePage * size));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, list]);
+  }, [activePage, list]);
 
   const handlePageChange = (page: number) => {
-    setPage(page);
+    console.log(page);
+    handleActivePage(page);
   };
 
   const handleGoToFirstPage = () => {
-    setPage(1);
+    handleActivePage(1);
   };
 
   const handleGoToLastPage = () => {
     if (totalPages) {
-      setPage(totalPages?.length);
+      handleActivePage(totalPages?.length);
     }
   };
 
   const handlePrevPageChange = () => {
-    if (page > 1) {
-      setPage(page - 1);
+    if (activePage > 1) {
+      handleActivePage(activePage - 1);
     }
   };
 
   const handleNextPageChange = () => {
-    if (totalPages && page !== totalPages.length) {
-      setPage(page + 1);
+    if (totalPages && activePage !== totalPages.length) {
+      handleActivePage(activePage + 1);
     }
   };
 
@@ -68,20 +73,20 @@ function Pagination({
         text="<<"
         isActive={false}
         handleClick={handleGoToFirstPage}
-        isDisabled={page === 1 ? true : false}
+        isDisabled={activePage === 1 ? true : false}
       />
       <Page
         text="<"
         isActive={false}
         handleClick={handlePrevPageChange}
-        isDisabled={page === 1 ? true : false}
+        isDisabled={activePage === 1 ? true : false}
       />
       {totalPages != null &&
         totalPages.map((pageNo: number, index: number) => (
           <Page
             key={pageNo}
             text={pageNo}
-            isActive={pageNo === page ? true : false}
+            isActive={pageNo === activePage ? true : false}
             handleClick={() => handlePageChange(pageNo)}
           />
         ))}
@@ -89,13 +94,17 @@ function Pagination({
         text=">"
         isActive={false}
         handleClick={handleNextPageChange}
-        isDisabled={totalPages && page === totalPages.length ? true : false}
+        isDisabled={
+          totalPages && activePage === totalPages.length ? true : false
+        }
       />
       <Page
         text=">>"
         isActive={false}
         handleClick={handleGoToLastPage}
-        isDisabled={totalPages && page === totalPages.length ? true : false}
+        isDisabled={
+          totalPages && activePage === totalPages.length ? true : false
+        }
       />
     </StyledPaginationWrapper>
   );
