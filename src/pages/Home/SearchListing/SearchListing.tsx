@@ -1,12 +1,14 @@
 import React, { ChangeEvent, ReactElement, useEffect, useState } from "react";
 import SearchInput from "@components/SearchInput";
-import useUserData from "@hooks/useMembers";
+
 import SearchResults from "../SearchResults";
 import Container from "@components/Container";
 import Text from "@components/Text";
 import { UserDataType } from "@typings/types";
 import Pagination from "@components/Pagination";
 import { EmptyState, ErrorState } from "@components/EmptyState";
+import useMembers from "@hooks/useMembers";
+import { filter } from "lodash";
 
 const PAGINATION_SIZE = 5;
 
@@ -14,68 +16,39 @@ type SearchListingProps = {};
 
 function SearchListing({}: SearchListingProps): ReactElement {
   /**
-   * Get the data from the React Query with the custom hook
-   */
-  const { data, isError } = useUserData();
-
-  /**
    * Store the results and the search field value in the state
    */
   const [currentPage, setCurrentPage] = useState(1);
   const [results, setResults] = useState<UserDataType[] | null>();
   const [searchQuery, setSearchQuery] = useState("");
+  /**
+   * Get the data from the React Query with the custom hook
+   */
+  const { data, isError } = useMembers();
+
+  useEffect(() => {
+    setResults(data);
+  }, [data]);
 
   /**
    * Every time the data changes, check if there is data and
    * check the length and then update the results state with that.
    */
   useEffect(() => {
-    if (data && data.length > 0) {
-      console.log("So this is where the shit is getting real pal");
-      console.log(data, currentPage, currentPage * PAGINATION_SIZE);
-      /**
-       * 0,5
-       * 5,10
-       * 10,15
-       * ....
-       */
-      console.log(
-        data.slice(
-          currentPage === 1 ? 0 : (currentPage - 1) * PAGINATION_SIZE,
-          currentPage === 1 ? PAGINATION_SIZE : currentPage * PAGINATION_SIZE
-        )
-      );
+    if (data) {
       /**
        * Initialize the state with the first page contents
        */
       const filteredResults = data.slice(
-        currentPage === 1 ? 0 : (currentPage - 1) * PAGINATION_SIZE,
-        currentPage === 1 ? PAGINATION_SIZE : currentPage * PAGINATION_SIZE
+        currentPage * PAGINATION_SIZE - PAGINATION_SIZE,
+        currentPage * PAGINATION_SIZE - PAGINATION_SIZE + PAGINATION_SIZE
       );
 
-      setResults(filteredResults);
+      if (filteredResults.length) {
+        setResults(filteredResults);
+      }
     }
   }, [data, currentPage]);
-
-  useEffect(() => {
-    console.log("Data changed", results);
-
-    if (results && results.length === 0) {
-      console.log(
-        "Looks like it is time to go back by one page",
-        currentPage,
-        currentPage - 1
-      );
-      // setCurrentPage((state) => {
-      //   console.log(state, state - 1);
-      //   return state - 1;
-      // });
-      console.log(
-        data.slice(currentPage * PAGINATION_SIZE, currentPage * PAGINATION_SIZE)
-      );
-      // setCurrentPage(currentPage - 1);
-    }
-  }, [results, currentPage]);
 
   const handlePageChange = (list: UserDataType[]) => {
     setResults(list);

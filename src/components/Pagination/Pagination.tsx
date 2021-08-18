@@ -18,7 +18,6 @@ function Pagination({
   activePage,
   handleActivePage,
 }: PaginationProps): ReactElement {
-  // const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState<number[] | null>(null);
 
   useEffect(() => {
@@ -35,13 +34,11 @@ function Pagination({
   }, [list, size]);
 
   useEffect(() => {
-    console.log("page or list changed", list.length);
     onPageChange(list.slice(activePage * size - size, activePage * size));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activePage, list]);
 
   const handlePageChange = (page: number) => {
-    console.log(page);
     handleActivePage(page);
   };
 

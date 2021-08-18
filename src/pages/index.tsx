@@ -1,5 +1,5 @@
 import Head from "next/head";
-import SearchListing from "./Home/SearchListing/SearchListing";
+import SearchListing from "./Home/SearchListing";
 
 export default function Home() {
   return (

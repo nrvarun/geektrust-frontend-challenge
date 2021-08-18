@@ -32,17 +32,23 @@ function SearchResults({ results }: IProps): ReactElement {
 
     if (checkBox.value !== "all") {
       setSelectedUsers((state) => {
+        console.log(
+          "What is getting selected is not all, so push it in to the array"
+        );
         return [...state, +checkBox.value];
       });
     } else {
-      if (checkBox.checked) {
-        setIsCheckAll(true);
+      console.log("so looks like we are in the all", checkBox.checked);
 
+      setIsCheckAll(checkBox.checked);
+
+      if (checkBox.checked) {
         if (results) {
           setSelectedUsers(results.map((item: any) => +item.id));
         }
       } else {
         setIsCheckAll(false);
+        setSelectedUsers([]);
       }
     }
 
@@ -54,12 +60,13 @@ function SearchResults({ results }: IProps): ReactElement {
   };
 
   useEffect(() => {
-    if (!isCheckAll) {
+    if (!isCheckAll && results && selectedUsers.length === results.length) {
       setSelectedUsers([]);
     }
-  }, [isCheckAll]);
+  }, [isCheckAll, results, selectedUsers.length]);
 
   useEffect(() => {
+    console.log("Selected users are :", selectedUsers);
     if (results) {
       if (selectedUsers.length === results.length) {
         setIsCheckAll(true);
