@@ -1,4 +1,11 @@
-import React, { ChangeEvent, ReactElement, useEffect, useState } from "react";
+import React, {
+  ChangeEvent,
+  ReactElement,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import SearchInput from "@components/SearchInput";
 
 import SearchResults from "../SearchResults";
@@ -8,7 +15,8 @@ import { UserDataType } from "@typings/types";
 import Pagination from "@components/Pagination";
 import { EmptyState, ErrorState } from "@components/EmptyState";
 import useMembers from "@hooks/useMembers";
-import { filter } from "lodash";
+import { debounce, filter } from "lodash";
+import { queryClient } from "pages/_app";
 
 const PAGINATION_SIZE = 5;
 
@@ -24,7 +32,7 @@ function SearchListing({}: SearchListingProps): ReactElement {
   /**
    * Get the data from the React Query with the custom hook
    */
-  const { data, isError } = useMembers();
+  const { data, isError, refetch } = useMembers();
 
   useEffect(() => {
     setResults(data);
@@ -47,31 +55,67 @@ function SearchListing({}: SearchListingProps): ReactElement {
       if (filteredResults.length) {
         setResults(filteredResults);
       } else {
-        setCurrentPage((state) => state - 1);
+        if (currentPage) {
+          setCurrentPage((state) => state - 1);
+        }
       }
     }
-  }, [data, currentPage]);
+  }, [data, currentPage, searchQuery]);
 
   const handlePageChange = (list: UserDataType[]) => {
     setResults(list);
   };
 
-  const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
-    const query = e.target.value;
-    setSearchQuery(query);
-  };
+  const handleSearch = useMemo(
+    () =>
+      debounce((e: ChangeEvent<HTMLInputElement>) => {
+        const query = e.target.value;
+        setSearchQuery(query);
+      }, 300),
+    []
+  );
 
-  const globalFilter = (list: UserDataType[]) => {
-    if (searchQuery === "") {
-      return list;
-    } else {
-      if (list && searchQuery)
-        return list.filter(
+  useEffect(() => {
+    if (searchQuery !== "") {
+      queryClient.setQueryData("users", () =>
+        data.filter(
           (item: UserDataType) =>
             item.name.toLowerCase().includes(searchQuery) ||
             item.email.toLowerCase().includes(searchQuery) ||
             item.role.toLowerCase().includes(searchQuery)
+        )
+      );
+    } else {
+      refetch();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data, searchQuery]);
+
+  const getPaginatedData = (list: UserDataType[]) => {
+    if (list.length) {
+      return list.slice(
+        (currentPage - 1) * PAGINATION_SIZE,
+        currentPage * PAGINATION_SIZE
+      );
+    } else {
+      return [];
+    }
+  };
+
+  const globalFilter = (list: UserDataType[]) => {
+    if (searchQuery === "") {
+      return getPaginatedData(list);
+    } else {
+      if (list && searchQuery) {
+        return getPaginatedData(
+          data.filter(
+            (item: UserDataType) =>
+              item.name.toLowerCase().includes(searchQuery) ||
+              item.email.toLowerCase().includes(searchQuery) ||
+              item.role.toLowerCase().includes(searchQuery)
+          )
         );
+      }
     }
   };
 
@@ -97,7 +141,7 @@ function SearchListing({}: SearchListingProps): ReactElement {
          * If so then show the users list
          */}
         {results && !isError && results.length !== 0 && (
-          <SearchResults results={globalFilter(results)} />
+          <SearchResults results={globalFilter(data)} />
         )}
         {/**
          * Check if the list is empty and if so show an empty list

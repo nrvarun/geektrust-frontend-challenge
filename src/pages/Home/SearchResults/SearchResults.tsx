@@ -27,56 +27,42 @@ function SearchResults({ results }: IProps): ReactElement {
 
   const { data: users } = useQuery<UserDataType[]>("users");
 
-  const handleCheckBoxChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const checkBox = event.target;
+  const handleCheckBoxChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      const checkBox = event.target;
 
-    if (checkBox.value !== "all") {
-      setSelectedUsers((state) => {
-        console.log(
-          "What is getting selected is not all, so push it in to the array"
-        );
-        return [...state, +checkBox.value];
-      });
-    } else {
-      console.log("so looks like we are in the all", checkBox.checked);
-
-      setIsCheckAll(checkBox.checked);
-
-      if (checkBox.checked) {
-        if (results) {
-          setSelectedUsers(results.map((item: any) => +item.id));
+      if (checkBox.value !== "all") {
+        if (checkBox.checked) {
+          setSelectedUsers((state) => {
+            return [...state, +checkBox.value];
+          });
+        } else {
+          setSelectedUsers(
+            selectedUsers.filter((item) => item !== +checkBox.value)
+          );
         }
       } else {
-        setIsCheckAll(false);
-        setSelectedUsers([]);
+        setIsCheckAll(checkBox.checked);
+
+        if (checkBox.checked) {
+          if (results) {
+            setSelectedUsers(results.map((item: any) => +item.id));
+          }
+        } else {
+          setSelectedUsers([]);
+        }
       }
-    }
-
-    if (!checkBox.checked) {
-      setSelectedUsers(
-        selectedUsers.filter((item) => item !== +checkBox.value)
-      );
-    }
-  };
+    },
+    [results, selectedUsers]
+  );
 
   useEffect(() => {
-    if (!isCheckAll && results && selectedUsers.length === results.length) {
-      setSelectedUsers([]);
-    }
-  }, [isCheckAll, results, selectedUsers.length]);
-
-  useEffect(() => {
-    console.log("Selected users are :", selectedUsers);
     if (results) {
       if (selectedUsers.length === results.length) {
         setIsCheckAll(true);
       } else {
         setIsCheckAll(false);
       }
-    }
-
-    if (results?.length === 0) {
-      setIsCheckAll(false);
     }
   }, [selectedUsers, results]);
 
