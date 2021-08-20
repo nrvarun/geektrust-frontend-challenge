@@ -46,6 +46,8 @@ function SearchListing({}: SearchListingProps): ReactElement {
 
       if (filteredResults.length) {
         setResults(filteredResults);
+      } else {
+        setCurrentPage((state) => state - 1);
       }
     }
   }, [data, currentPage]);
