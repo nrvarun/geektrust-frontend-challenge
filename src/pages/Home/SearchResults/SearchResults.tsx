@@ -16,7 +16,7 @@ import Button from "@components/Button";
 import { UserDataType } from "@typings/types";
 
 type IProps = {
-  results: UserDataType[] | undefined;
+  results: UserDataType[];
 };
 
 type SelectedUsersState = number[];

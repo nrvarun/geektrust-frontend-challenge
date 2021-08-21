@@ -20,6 +20,7 @@ function SearchInput({
         type="search"
         placeholder={placeholder}
         id={id}
+        autoComplete="off"
         name={name}
         onChange={onChange}
       />

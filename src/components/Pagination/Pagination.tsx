@@ -8,13 +8,11 @@ interface PaginationProps {
   list: UserDataType[];
   activePage: number;
   handleActivePage: (page: number) => void;
-  onPageChange: (arr: Array<UserDataType>) => void;
 }
 
 function Pagination({
   list,
   size,
-  onPageChange,
   activePage,
   handleActivePage,
 }: PaginationProps): ReactElement {
@@ -25,18 +23,15 @@ function Pagination({
      * Calculate the total no. of pages from the
      * list and the pagination size (size prop)
      */
-    const pages = Math.ceil(list.length / size);
-    setTotalPages(
-      Array(pages)
-        .fill(1)
-        .map((item, index) => index + 1)
-    );
+    if (list) {
+      const pages = Math.ceil(list.length / size);
+      setTotalPages(
+        Array(pages)
+          .fill(1)
+          .map((item, index) => index + 1)
+      );
+    }
   }, [list, size]);
-
-  useEffect(() => {
-    onPageChange(list.slice(activePage * size - size, activePage * size));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activePage, list]);
 
   const handlePageChange = (page: number) => {
     handleActivePage(page);

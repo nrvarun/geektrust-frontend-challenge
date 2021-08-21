@@ -1,3 +1,4 @@
+import { isEqual } from "lodash";
 import React, { memo, ReactElement } from "react";
 import styled from "styled-components";
 
@@ -9,6 +10,15 @@ interface PageProps {
   type?: PageType;
   isDisabled?: boolean;
   handleClick: () => void;
+}
+
+function areEquals(prev: PageProps, next: PageProps) {
+  return (
+    isEqual(prev?.text, next?.text) &&
+    isEqual(prev?.isActive, next?.isActive) &&
+    isEqual(prev?.handleClick, next?.handleClick) &&
+    isEqual(prev?.type, next?.type)
+  );
 }
 
 function Page({
@@ -32,7 +42,7 @@ function Page({
   );
 }
 
-export default memo(Page);
+export default memo(Page, areEquals);
 
 const StyledPage = styled.button`
   padding: 0.75rem;
