@@ -16,9 +16,8 @@ import Pagination from "@components/Pagination";
 import { EmptyState, ErrorState } from "@components/EmptyState";
 import useMembers from "@hooks/useMembers";
 import { debounce, set } from "lodash";
-import { queryClient } from "pages/_app";
 
-const PAGINATION_SIZE = 5;
+const PAGINATION_SIZE = 10;
 
 type SearchListingProps = {};
 
