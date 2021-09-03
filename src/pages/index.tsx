@@ -1,3 +1,4 @@
+import SearchContextProvider from "context/SearchContext";
 import Head from "next/head";
 import SearchListing from "./Home/SearchListing";
 
@@ -10,7 +11,9 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <SearchListing />
+        <SearchContextProvider>
+          <SearchListing />
+        </SearchContextProvider>
       </main>
     </div>
   );

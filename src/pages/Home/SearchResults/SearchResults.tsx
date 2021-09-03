@@ -3,17 +3,17 @@ import React, {
   memo,
   ReactElement,
   useCallback,
+  useContext,
   useEffect,
   useState,
 } from "react";
-import { useQuery } from "react-query";
-import { queryClient } from "pages/_app";
 import styled from "styled-components";
 
 import Modal from "@components/Modal";
 import UserItem from "@components/UserItem";
 import Button from "@components/Button";
 import { UserDataType } from "@typings/types";
+import { SearchContext, SearchContextInterface } from "context/SearchContext";
 
 type IProps = {
   results: UserDataType[];
@@ -25,7 +25,9 @@ function SearchResults({ results }: IProps): ReactElement {
   const [selectedUsers, setSelectedUsers] = useState<SelectedUsersState>([]);
   const [isCheckAll, setIsCheckAll] = useState(false);
 
-  const { data: users } = useQuery<UserDataType[]>("users");
+  const { users, setUser } = useContext(
+    SearchContext
+  ) as SearchContextInterface;
 
   const handleCheckBoxChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
@@ -99,8 +101,7 @@ function SearchResults({ results }: IProps): ReactElement {
         };
 
         if (results && users) {
-          queryClient.setQueryData(
-            "users",
+          setUser(
             users.map((user: UserDataType) =>
               user.id === editItem.id ? editedData : user
             )
@@ -129,10 +130,7 @@ function SearchResults({ results }: IProps): ReactElement {
   const handleDeleteRow = useCallback(
     (id: string) => {
       if (results && users) {
-        queryClient.setQueryData(
-          "users",
-          users.filter((item: UserDataType) => item.id !== id)
-        );
+        setUser(users.filter((item: UserDataType) => item.id !== id));
       }
     },
     [results, users]
@@ -151,7 +149,7 @@ function SearchResults({ results }: IProps): ReactElement {
        * Remove the selected items from the array and
        * update the state with those values
        */
-      queryClient.setQueryData("users", finalUsersCollection);
+      setUser(finalUsersCollection);
       setSelectedUsers([]);
     }
   }, [selectedUsers, users]);

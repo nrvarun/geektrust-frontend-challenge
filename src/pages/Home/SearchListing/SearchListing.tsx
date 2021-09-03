@@ -2,6 +2,7 @@ import React, {
   ChangeEvent,
   ReactElement,
   useCallback,
+  useContext,
   useEffect,
   useMemo,
   useState,
@@ -13,11 +14,12 @@ import Container from "@components/Container";
 import Text from "@components/Text";
 import { UserDataType } from "@typings/types";
 import Pagination from "@components/Pagination";
-import { EmptyState, ErrorState } from "@components/EmptyState";
+import { EmptyState } from "@components/EmptyState";
 import useMembers from "@hooks/useMembers";
 import { debounce, set } from "lodash";
+import { SearchContext, SearchContextInterface } from "context/SearchContext";
 
-const PAGINATION_SIZE = 10;
+const PAGINATION_SIZE = 5;
 
 type SearchListingProps = {};
 
@@ -25,7 +27,7 @@ function SearchListing({}: SearchListingProps): ReactElement {
   /**
    * Get the data from the React Query with the custom hook
    */
-  const { data, isError, refetch } = useMembers();
+  const { users } = useContext(SearchContext) as SearchContextInterface;
 
   /**
    * Store the results and the search field value in the state
@@ -34,37 +36,33 @@ function SearchListing({}: SearchListingProps): ReactElement {
   const [currentPage, setCurrentPage] = useState(1);
   const [results, setResults] = useState<UserDataType[] | null>();
   const [searchQuery, setSearchQuery] = useState("");
-  const [collection, setCollection] = useState(data);
+  const [collection, setCollection] = useState(users);
 
   useEffect(() => {
-    if (data) {
-      setCollection(data);
+    if (users) {
+      setCollection(users);
     }
-  }, [data]);
+  }, [users]);
 
   /**
    * Every time the data changes, check if there is data and
    * check the length and then update the results state with that.
    */
   useEffect(() => {
-    if (data) {
+    if (users) {
       /**
        * Initialize the state with the first page contents
        */
-      const filteredResults = data.slice(
+      const filteredResults = users.slice(
         currentPage * PAGINATION_SIZE - PAGINATION_SIZE,
-        currentPage * PAGINATION_SIZE - PAGINATION_SIZE + PAGINATION_SIZE
+        currentPage * PAGINATION_SIZE
       );
 
       if (filteredResults.length) {
         setResults(filteredResults);
-      } else {
-        if (currentPage) {
-          setCurrentPage((state) => state - 1);
-        }
       }
     }
-  }, [data, currentPage]);
+  }, [users, currentPage]);
 
   const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
     const query = e.target.value;
@@ -85,7 +83,7 @@ function SearchListing({}: SearchListingProps): ReactElement {
         })
       );
     } else {
-      setCollection(data);
+      setCollection(users);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -114,17 +112,13 @@ function SearchListing({}: SearchListingProps): ReactElement {
             onChange={debouncedSearch}
           />
         </form>
-        {/**
-         * Check if there has been an error in processing the request and
-         * if so show the error.
-         */}
-        {isError && <ErrorState />}
+
         {/**
          * Check if there is data, and that no error has happened.
          * If so then show the users list
          */}
         <p>{`Found ${collection?.length} people, for the search Query ${searchQuery}.`}</p>
-        {collection && !isError && collection.length !== 0 && (
+        {collection && collection.length !== 0 && (
           <SearchResults results={getPaginatedData(collection)} />
         )}
         {/**
