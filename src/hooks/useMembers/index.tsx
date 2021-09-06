@@ -1,3 +1,3 @@
-import useMembers from "./useMembers";
+import { useMembers } from "./useMembers";
 
 export default useMembers;
