@@ -28,7 +28,7 @@ function SearchResults({ results }: IProps): ReactElement {
 
   const { width } = useWindowSize();
 
-  const { users, setUser } = useContext(
+  const { users = [], setUsers } = useContext(
     SearchContext
   ) as SearchContextInterface;
 
@@ -104,7 +104,7 @@ function SearchResults({ results }: IProps): ReactElement {
         };
 
         if (results && users) {
-          setUser(
+          setUsers(
             users.map((user: UserDataType) =>
               user.id === editItem.id ? editedData : user
             )
@@ -133,7 +133,7 @@ function SearchResults({ results }: IProps): ReactElement {
   const handleDeleteRow = useCallback(
     (id: string) => {
       if (results && users) {
-        setUser(users.filter((item: UserDataType) => item.id !== id));
+        setUsers(users.filter((item: UserDataType) => item.id !== id));
       }
     },
     [results, users]
@@ -152,7 +152,7 @@ function SearchResults({ results }: IProps): ReactElement {
        * Remove the selected items from the array and
        * update the state with those values
        */
-      setUser(finalUsersCollection);
+      setUsers(finalUsersCollection);
       setSelectedUsers([]);
     }
   }, [selectedUsers, users]);

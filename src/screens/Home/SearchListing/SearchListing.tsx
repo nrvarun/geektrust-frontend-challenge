@@ -1,10 +1,10 @@
-import React, {
+import {
   ChangeEvent,
+  memo,
   ReactElement,
   useCallback,
   useContext,
   useEffect,
-  useMemo,
   useState,
 } from "react";
 import SearchInput from "@components/SearchInput";
@@ -15,9 +15,9 @@ import Text from "@components/Text";
 import { UserDataType } from "@typings/types";
 import Pagination from "@components/Pagination";
 import { EmptyState } from "@components/EmptyState";
-import useMembers from "@hooks/useMembers";
 import { debounce, set } from "lodash";
 import { SearchContext, SearchContextInterface } from "context/SearchContext";
+import styled from "styled-components";
 
 const PAGINATION_SIZE = 5;
 
@@ -34,7 +34,7 @@ function SearchListing({}: SearchListingProps): ReactElement {
    */
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [results, setResults] = useState<UserDataType[] | null>();
+  const [results, setResults] = useState<UserDataType[]>();
   const [searchQuery, setSearchQuery] = useState("");
   const [collection, setCollection] = useState(users);
 
@@ -117,8 +117,22 @@ function SearchListing({}: SearchListingProps): ReactElement {
          * Check if there is data, and that no error has happened.
          * If so then show the users list
          */}
-        <p>{`Found ${collection?.length} people, for the search Query ${searchQuery}.`}</p>
-        {collection && collection.length !== 0 && (
+        <StyledSearchResult>
+          found<StyledSearchTerm>{collection?.length}</StyledSearchTerm>
+          people
+          {searchQuery !== "" && (
+            <>
+              ,for the search query
+              <StyledSearchTerm>{searchQuery}</StyledSearchTerm>
+            </>
+          )}
+          .
+        </StyledSearchResult>
+
+        {/**
+         * Show the search results in a table format
+         */}
+        {collection && collection.length > 0 && (
           <SearchResults results={getPaginatedData(collection)} />
         )}
         {/**
@@ -144,4 +158,17 @@ function SearchListing({}: SearchListingProps): ReactElement {
   );
 }
 
-export default SearchListing;
+export default memo(SearchListing);
+
+const StyledSearchTerm = styled.span`
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin: 0 0.2rem;
+  text-decoration: underline;
+`;
+
+const StyledSearchResult = styled.p`
+  font-size: 0.85rem;
+  font-style: italic;
+  font-weight: 300;
+`;

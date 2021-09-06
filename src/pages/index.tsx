@@ -1,8 +1,9 @@
+import useMembers from "@hooks/useMembers";
 import SearchContextProvider from "context/SearchContext";
 import Head from "next/head";
-import SearchListing from "./Home/SearchListing";
+import SearchListing from "screens/Home/SearchListing";
 
-export default function Home() {
+export default function Home({ list = [] }) {
   return (
     <div>
       <Head>
@@ -11,10 +12,21 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <SearchContextProvider>
+        <SearchContextProvider data={list}>
           <SearchListing />
         </SearchContextProvider>
       </main>
     </div>
   );
+}
+
+export async function getStaticProps() {
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const list = (await useMembers()) || [];
+
+  return {
+    props: {
+      list,
+    }, // will be passed to the page component as props
+  };
 }

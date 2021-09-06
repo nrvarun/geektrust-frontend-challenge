@@ -3,38 +3,41 @@ import { UserDataType } from "@typings/types";
 import { createContext, PropsWithChildren, useEffect, useState } from "react";
 
 type SearchContextProviderType = {
+  data: UserDataType[] | [];
   children: React.ReactElement | React.ReactElement[];
 };
 
 export interface SearchContextInterface {
   users: UserDataType[] | [];
-  setUser: any;
+  setUsers: any;
 }
 
 export const SearchContext = createContext<SearchContextInterface | null>(null);
 
-const SearchContextProvider = ({ children }: SearchContextProviderType) => {
-  const [users, setUser] = useState<UserDataType[]>([]);
+const SearchContextProvider = ({
+  data,
+  children,
+}: SearchContextProviderType) => {
+  const [users, setUsers] = useState<UserDataType[]>([]);
 
   useEffect(() => {
-    const getUserData = async () => {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}`);
-      const data = await res.json();
+    if (data) {
+      setUsers(data);
+    }
+  }, [data]);
 
-      setUser(data);
-    };
-
-    getUserData();
-  }, []);
-
-  useEffect(() => {
-    console.log("User collection", users);
-  }, [users]);
+  if (users) {
+    return (
+      <SearchContext.Provider value={{ users, setUsers }}>
+        {children}
+      </SearchContext.Provider>
+    );
+  }
 
   return (
-    <SearchContext.Provider value={{ users, setUser }}>
-      {children}
-    </SearchContext.Provider>
+    <div style={{ height: 300, display: "flex" }}>
+      <p style={{ margin: "auto" }}>loading...</p>
+    </div>
   );
 };
 
