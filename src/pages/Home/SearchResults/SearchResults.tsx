@@ -14,6 +14,7 @@ import UserItem from "@components/UserItem";
 import Button from "@components/Button";
 import { UserDataType } from "@typings/types";
 import { SearchContext, SearchContextInterface } from "context/SearchContext";
+import useWindowSize from "@hooks/useWindowSize";
 
 type IProps = {
   results: UserDataType[];
@@ -24,6 +25,8 @@ type SelectedUsersState = number[];
 function SearchResults({ results }: IProps): ReactElement {
   const [selectedUsers, setSelectedUsers] = useState<SelectedUsersState>([]);
   const [isCheckAll, setIsCheckAll] = useState(false);
+
+  const { width } = useWindowSize();
 
   const { users, setUser } = useContext(
     SearchContext
@@ -192,9 +195,9 @@ function SearchResults({ results }: IProps): ReactElement {
           <UserItem
             isHeader
             id={"0"}
-            role={"Role"}
-            email={"email"}
-            name={"name"}
+            role={width && width > 767 ? "Role" : ""}
+            email={width && width > 767 ? "email" : ""}
+            name={width && width > 767 ? "Name" : ""}
             isChecked={isCheckAll}
             onCheck={handleCheckBoxChange}
             onEdit={handleEditRow}

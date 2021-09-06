@@ -1,3 +1,4 @@
+import { DEVICE_BREAKPOINTS } from "@libs/constants";
 import React, { PropsWithoutRef, ReactElement } from "react";
 import styled from "styled-components";
 
@@ -35,10 +36,29 @@ export default Heading;
 
 const StyledHeading1 = styled.h1`
   color: var(--primary-color, black);
+  font-size: 1.5rem;
+
+  @media (min-width: ${DEVICE_BREAKPOINTS.tablet}) {
+    font-size: 2rem;
+  }
+
+  @media (min-width: ${DEVICE_BREAKPOINTS.desktop}) {
+    font-size: 3rem;
+  }
 `;
 
 const StyledHeading2 = styled.h2`
   color: var(--primary-color, black);
+
+  font-size: 1.25rem;
+
+  @media (min-width: ${DEVICE_BREAKPOINTS.tablet}) {
+    font-size: 1.75rem;
+  }
+
+  @media (min-width: ${DEVICE_BREAKPOINTS.desktop}) {
+    font-size: 2.5rem;
+  }
 `;
 
 const StyledHeading3 = styled.h3`
@@ -59,4 +79,13 @@ const StyledHeading6 = styled.h6`
 
 const StyledParagraph = styled.p`
   color: var(--primary-color, black);
+  font-size: 0.75rem;
+
+  @media (min-width: ${DEVICE_BREAKPOINTS.tablet}) {
+    font-size: 1rem;
+  }
+
+  @media (min-width: ${DEVICE_BREAKPOINTS.desktop}) {
+    font-size: 1.25rem;
+  }
 `;

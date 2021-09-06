@@ -8,6 +8,7 @@ import editIcon from "@assets/icons/edit.png";
 import trashIcon from "@assets/icons/trash.png";
 
 import { DEVICE_BREAKPOINTS } from "@libs/constants";
+import useWindowSize from "@hooks/useWindowSize";
 
 type UserRowType = UserDataType & UserActionsType;
 
@@ -22,6 +23,16 @@ function UserItem({
   onEdit,
   onDelete,
 }: UserRowType): ReactElement {
+  const { width } = useWindowSize();
+
+  const UserContent = () => (
+    <>
+      <StyledUserName>{name}</StyledUserName>
+      <StyledUserRole>{role}</StyledUserRole>
+      <StyledUserEmail>{email}</StyledUserEmail>
+    </>
+  );
+
   return (
     <StyledUserRow
       data-item-id={id}
@@ -30,7 +41,7 @@ function UserItem({
         backgroundColor: !isHeader && isChecked ? "#EDEEF7" : "transparent",
       }}
     >
-      <div>
+      <StyledInputWrapper>
         <input
           type="checkbox"
           name={name}
@@ -38,12 +49,16 @@ function UserItem({
           onChange={onCheck}
           checked={isChecked}
         />
-      </div>
-      <p>{name}</p>
-      <p>{role}</p>
-      <p>{email}</p>
+      </StyledInputWrapper>
+      {width && width > 767 ? (
+        <UserContent />
+      ) : (
+        <div>
+          <UserContent />
+        </div>
+      )}
       {isHeader ? (
-        <p>actions</p>
+        <p>{width && width > 767 ? "actions" : ""}</p>
       ) : (
         <StyledActions>
           <StyledButton onClick={() => onEdit(id)}>
@@ -60,27 +75,51 @@ function UserItem({
 
 export default UserItem;
 
+const StyledInputWrapper = styled.div`
+  display: inline-block;
+`;
+
+const StyledUserName = styled.p`
+  font-size: 1rem;
+  font-weight: 700 !important;
+  margin: 0 0 0.85rem 0;
+
+  @media (min-width: ${DEVICE_BREAKPOINTS.desktop}) {
+    font-weight: 400 !important;
+  }
+`;
+
+const StyledUserRole = styled.p`
+  font-size: 0.85rem;
+  font-weight: 600;
+
+  @media (min-width: ${DEVICE_BREAKPOINTS.desktop}) {
+    font-size: 1rem;
+  }
+`;
+
+const StyledUserEmail = styled.p`
+  font-size: 0.85rem;
+  font-weight: 400 !important;
+
+  @media (min-width: ${DEVICE_BREAKPOINTS.desktop}) {
+    font-size: 1rem;
+  }
+`;
+
 const StyledUserRow = styled.div`
   padding: 1rem;
   width: 100%;
-  display: grid;
   grid-template-columns: 0.5fr 1fr 0.75fr 1fr 0.5fr;
   justify-content: center;
   align-items: center;
+  position: relative;
+  display: grid;
 
   p {
-    font-size: 0.75rem;
     color: ${({ id }) => (id === "0" ? "#000000" : "#716f81")};
     text-transform: ${({ id }) => (id === "0" ? "capitalize" : "normal")};
     font-weight: ${({ id }) => (id === "0" ? "700" : "400")};
-
-    @media (min-width: ${DEVICE_BREAKPOINTS.tablet}) {
-      font-size: 0.85rem;
-    }
-
-    @media (min-width: ${DEVICE_BREAKPOINTS.desktop}) {
-      font-size: 1rem;
-    }
   }
 `;
 
@@ -88,6 +127,9 @@ const StyledActions = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  position: absolute;
+  top: 30px;
+  right: 0;
 `;
 
 const StyledButton = styled.button`

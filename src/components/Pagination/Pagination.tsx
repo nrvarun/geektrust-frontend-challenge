@@ -1,3 +1,4 @@
+import useWindowSize from "@hooks/useWindowSize";
 import { UserDataType } from "@typings/types";
 import React, { ReactElement, useEffect, useState } from "react";
 import styled from "styled-components";
@@ -59,6 +60,12 @@ function Pagination({
     }
   };
 
+  const handleSelectChange = (e: any) => {
+    handleActivePage(e.target.value);
+  };
+
+  const { width } = useWindowSize();
+
   return (
     <StyledPaginationWrapper>
       <Page
@@ -73,15 +80,31 @@ function Pagination({
         handleClick={handlePrevPageChange}
         isDisabled={activePage === 1 ? true : false}
       />
-      {totalPages != null &&
-        totalPages.map((pageNo: number, index: number) => (
-          <Page
-            key={pageNo}
-            text={pageNo}
-            isActive={pageNo === activePage ? true : false}
-            handleClick={() => handlePageChange(pageNo)}
-          />
-        ))}
+      {width && width > 767 ? (
+        <>
+          {totalPages != null &&
+            totalPages.map((pageNo: number, index: number) => (
+              <Page
+                key={pageNo}
+                text={pageNo}
+                isActive={pageNo === activePage ? true : false}
+                handleClick={() => handlePageChange(pageNo)}
+              />
+            ))}
+        </>
+      ) : (
+        <StyledSelect
+          value={activePage}
+          onChange={(e) => handleSelectChange(e)}
+        >
+          {totalPages != null &&
+            totalPages.map((pageNo: number, index: number) => (
+              <option key={index} value={pageNo}>
+                {pageNo}
+              </option>
+            ))}
+        </StyledSelect>
+      )}
       <Page
         text=">"
         isActive={false}
@@ -109,4 +132,14 @@ const StyledPaginationWrapper = styled.div`
   align-items: center;
   justify-content: center;
   margin: 2rem 0;
+`;
+
+const StyledSelect = styled.select`
+  text-transform: none;
+  padding: 10px 5px;
+  border-color: var(--primary-color);
+  border-radius: 6px;
+  font-size: 12px;
+  margin: 0 7px;
+  color: var(--primary-color);
 `;

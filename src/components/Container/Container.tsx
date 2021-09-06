@@ -19,7 +19,7 @@ const Wrapper = styled.div`
     max-width: calc(var(--tablet-bp) - 5%);
   }
 
-  @media (min-width: ${DEVICE_BREAKPOINTS.desktop}) {
+  @media (min-width: ${DEVICE_BREAKPOINTS.desktopLg}) {
     max-width: calc(var(--desktop-bp) - 15%);
   }
 `;
